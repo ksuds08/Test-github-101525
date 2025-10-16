@@ -52,7 +52,7 @@ jobs:
 
       - name: Run tests
         run: |
-          if [ -f "package.json" ] && grep -q "\"test\":" package.json; then
+          if [ -f "package.json" ] && grep -q "\\"test\\":" package.json; then
             npm test || echo "::warning::Tests failed but continuing deployment"
           else
             echo "::notice::No tests configured"
@@ -61,7 +61,7 @@ jobs:
       - name: Build application
         run: |
           echo "::group::Building application"
-          if [ -f "package.json" ] && grep -q '"\"build\":' package.json; then
+          if [ -f "package.json" ] && grep -q '"\\"build\\":' package.json; then
             npm run build
           else
             echo "::notice::No build script found in package.json"
@@ -94,15 +94,15 @@ jobs:
           # Check for wrangler.toml first (most reliable)
           if [ -f "wrangler.toml" ]; then
             echo "Found wrangler.toml configuration"
-            MAIN_ENTRY=$(grep -E '^main\s*=' wrangler.toml | sed 's/.*=\s*"\(.*\)"/\1/' | head -1)
+            MAIN_ENTRY=$(grep -E '^main\\s*=' wrangler.toml | sed 's/.*=\\s*"\\(.*\\)"/\\1/' | head -1)
             if [ -n "$MAIN_ENTRY" ]; then
               echo "Entry point from wrangler.toml: $MAIN_ENTRY"
             fi
           fi
           
           # Check for various entry points
-          if [ ! -f "index.js" ] && [ ! -f "index.ts" ] && [ ! -f "src/index.js" ] && [ ! -f "src/index.ts" ] && \
-             [ ! -f "workers/app.ts" ] && [ ! -f "workers/app.js" ] && [ ! -f "dist/index.js" ] && \
+          if [ ! -f "index.js" ] && [ ! -f "index.ts" ] && [ ! -f "src/index.js" ] && [ ! -f "src/index.ts" ] && \\
+             [ ! -f "workers/app.ts" ] && [ ! -f "workers/app.js" ] && [ ! -f "dist/index.js" ] && \\
              [ ! -f "build/index.js" ] && [ -z "$MAIN_ENTRY" ]; then
             echo "::error::No worker entry point found. Checked: index.js, index.ts, src/index.js, src/index.ts, workers/app.ts, workers/app.js, dist/index.js, build/index.js"
             echo "::error::Also checked wrangler.toml for main entry configuration"
@@ -137,7 +137,7 @@ jobs:
           fi
           
           # Extract URL from deployment
-          DEPLOYED_URL=$(grep -oP "https://[a-zA-Z0-9.-]+\.workers\.dev" deploy.log | head -1 || echo "")
+          DEPLOYED_URL=$(grep -oP "https://[a-zA-Z0-9.-]+\\.workers\\.dev" deploy.log | head -1 || echo "")
           if [ -n "$DEPLOYED_URL" ]; then
             echo "url=$DEPLOYED_URL" >> $GITHUB_OUTPUT
             echo "::notice::Worker deployed to $DEPLOYED_URL"
